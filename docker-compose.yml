@@ -1,34 +1,35 @@
 version: '3.8'
 
 services:
-  yottadb_container:
+  yottadb:
     image: yottadb/yottadb
     container_name: yottadb_container
     environment:
       - ydb_dir=/data/yottadb
-      - gtmdir=/data/yottadb  # Set GT.M dir to match YottaDB dir
     volumes:
       - yotta_data:/data/yottadb
-    command: >
+    command: |
       bash -c "
-      . /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
-      ydb <<< \"D ^GDE\" &&
-      ydb <<< \"D ^ZSY\" &&
+      source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
+      ydb -run ^GDE &&
+      ydb -run ^ZSY &&
       while true; do sleep 1000; done;
       "
 
   yottadb_init:
     depends_on:
-      - yottadb_container
+      - yottadb
     image: yottadb/yottadb
     container_name: yottadb_init
     volumes:
       - yotta_data:/data/yottadb
     entrypoint: ["/bin/bash", "-c"]
-    command: >
-      . /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
-      ydb <<< "SET ^myglobal(\"test\")=\"Hello, YottaDB!\"" &&
+    command: |
+      "
+      source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
+      ydb -run \"SET ^myglobal('test')='Hello, YottaDB!'\" &&
       echo 'Value set in YottaDB: ^myglobal(test) = Hello, YottaDB!'
-      
+      "
+
 volumes:
   yotta_data:
