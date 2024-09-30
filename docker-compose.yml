@@ -8,12 +8,13 @@ services:
       - ydb_dir=/data/yottadb
     volumes:
       - yotta_data:/data/yottadb
-    command: bash -c "
+    command: | 
+      bash -c "
       source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set;
       ydb -run ^GDE;
       ydb -run ^ZSY;
       while true; do sleep 1000; done;
-    "
+      "
 
   yottadb_init:
     depends_on:
