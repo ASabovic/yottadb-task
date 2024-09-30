@@ -6,11 +6,12 @@ services:
     container_name: yottadb_container
     environment:
       - ydb_dir=/data/yottadb
+      - gtmdir=/data/yottadb  # Set GT.M dir to match YottaDB dir
     volumes:
       - yotta_data:/data/yottadb
-    command: > 
+    command: >
       bash -c "
-      source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
+      . /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
       ydb <<< \"D ^GDE\" &&
       ydb <<< \"D ^ZSY\" &&
       while true; do sleep 1000; done;
@@ -25,8 +26,9 @@ services:
       - yotta_data:/data/yottadb
     entrypoint: ["/bin/bash", "-c"]
     command: >
-      source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
+      . /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
       ydb <<< "SET ^myglobal(\"test\")=\"Hello, YottaDB!\"" &&
       echo 'Value set in YottaDB: ^myglobal(test) = Hello, YottaDB!'
+      
 volumes:
   yotta_data:
