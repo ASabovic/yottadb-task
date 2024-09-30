@@ -1,11 +1,7 @@
-version: '3'
 services:
   yottadb:
     image: yottadb/yottadb:latest
     container_name: yottadb_container
-    # environment:
-    #   - ydb_dir=/data/yottadb
-    #   - gtmdir=/data/yottadb
     ports:
       - "1337:1337"
     environment:
@@ -22,11 +18,11 @@ services:
 
   yottadb_init:
     depends_on:
-      - yottadb_container
-    image: yottadb/yottadb
+      - yottadb
+    image: yottadb/yottadb:latest
     container_name: yottadb_init
     volumes:
-      - yotta_data:/data/yottadb
+      - ./data:/data
     entrypoint: ["/bin/bash", "-c"]
     command: |
       "
@@ -34,11 +30,3 @@ services:
       ydb -run \"SET ^myglobal('test')='Hello, YottaDB!'\" &&
       echo 'Value set in YottaDB: ^myglobal(test) = Hello, YottaDB!'
       "
-volumes:
-  yotta_data:
-
-
-
-
-
-
