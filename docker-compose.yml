@@ -8,11 +8,11 @@ services:
       - ydb_dir=/data/yottadb
     volumes:
       - yotta_data:/data/yottadb
-    command: | 
+    command: > 
       bash -c "
-      source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set;
-      ydb -run ^GDE;
-      ydb -run ^ZSY;
+      source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
+      ydb <<< \"D ^GDE\" &&
+      ydb <<< \"D ^ZSY\" &&
       while true; do sleep 1000; done;
       "
 
@@ -24,11 +24,9 @@ services:
     volumes:
       - yotta_data:/data/yottadb
     entrypoint: ["/bin/bash", "-c"]
-    command: |
-      "
+    command: >
       source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
-      ydb -run SET ^myglobal('test')='Hello, YottaDB!' &&
+      ydb <<< "SET ^myglobal(\"test\")=\"Hello, YottaDB!\"" &&
       echo 'Value set in YottaDB: ^myglobal(test) = Hello, YottaDB!'
-      "
 volumes:
   yotta_data:
