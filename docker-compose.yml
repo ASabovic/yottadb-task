@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  yottadb:
+  yottadb_container:
     image: yottadb/yottadb
     container_name: yottadb_container
     environment:
       - ydb_dir=/data/yottadb
     volumes:
       - yotta_data:/data/yottadb
-    command: |
+    command: | 
       bash -c "
       source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
       ydb -run ^GDE &&
@@ -18,7 +18,7 @@ services:
 
   yottadb_init:
     depends_on:
-      - yottadb
+      - yottadb_container
     image: yottadb/yottadb
     container_name: yottadb_init
     volumes:
