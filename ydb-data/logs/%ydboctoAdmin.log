@@ -1,0 +1,4 @@
+Mon Sep 30 15:16:25 UTC 2024
+Enter password for user ydb: 
+Re-enter password for user ydb: 
+Successfully added user: "ydb" with "readwrite+allowschemachanges" permissions

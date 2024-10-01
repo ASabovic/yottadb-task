@@ -1,32 +1,27 @@
+version: '3.8'
+
 services:
   yottadb:
-    image: yottadb/yottadb:latest
-    container_name: yottadb_container
-    ports:
-      - "1337:1337"
+    image: download.yottadb.com/yottadb/yottadb-debian:latest-master
+    container_name: yottadb
+    volumes:
+      - ./ydb-data:/data
     environment:
-      - YOTTA_DB_PORT=1337
-    volumes:
-      - ./data:/data
-    command: | 
-      bash -c "
-      source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
-      ydb -run ^GDE &&
-      ydb -run ^ZSY &&
-      while true; do sleep 1000; done;
-      "
+      - YDB_DIR=/data
+    entrypoint: ["sh", "-c", "tail -f /dev/null"]
+    #entrypoint: ["sh", "-c", "tail", "-f", "/dev/null"]
 
-  yottadb_init:
-    depends_on:
-      - yottadb
-    image: yottadb/yottadb:latest
-    container_name: yottadb_init
-    volumes:
-      - ./data:/data
-    entrypoint: ["/bin/bash", "-c"]
-    command: |
-      "
-      source /usr/local/lib/yottadb/r1.32_x86_64/ydb_env_set &&
-      ydb -run \"SET ^myglobal('test')='Hello, YottaDB!'\" &&
-      echo 'Value set in YottaDB: ^myglobal(test) = Hello, YottaDB!'
-      "
+  # yottadb_init:
+  #   depends_on:
+  #     - yottadb
+  #   image: download.yottadb.com/yottadb/yottadb-debian:latest-master
+  #   container_name: yottadb_init
+  #   volumes:
+  #     - ./ydb-data:/data  # Same volume to ensure shared data
+  #   entrypoint: ["/bin/bash", "-c"]
+  #   command: |
+  #     ydb <<< 'SET ^myglobal("test")="Hello again, YottaDB!"' &&
+  #     echo 'Value set in YottaDB: ^myglobal(test) = Hello again, YottaDB!'
+
+volumes:
+  ydb-data:
