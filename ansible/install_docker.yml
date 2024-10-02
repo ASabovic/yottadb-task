@@ -1,5 +1,5 @@
 ---
-- name: Install Docker on Ubuntu 24.04
+- name: Install Docker, Docker Compose, YottaDB, and GCC on Ubuntu 24.04
   hosts: ubuntu
   become: yes
   tasks:
@@ -7,7 +7,7 @@
       apt:
         update_cache: yes
 
-    - name: Install dependencies
+    - name: Install dependencies for Docker
       apt:
         name:
           - apt-transport-https
@@ -68,3 +68,59 @@
     - name: Print Docker Compose version
       debug:
         msg: "Docker Compose version: {{ compose_version.stdout }}"
+
+    # Install YottaDB and GCC
+
+    - name: Install dependencies for YottaDB and GCC
+      apt:
+        name:
+          - file
+          - binutils
+          - libelf-dev
+          - libicu-dev
+          - nano
+          - wget
+          - ca-certificates
+          - gcc
+        state: present
+
+    - name: Create temporary directory for YottaDB installation
+      file:
+        path: /tmp/tmp
+        state: directory
+        mode: '0755'
+
+    - name: Download YottaDB installation script
+      get_url:
+        url: https://download.yottadb.com/ydbinstall.sh
+        dest: /tmp/tmp/ydbinstall.sh
+        mode: '0755'
+
+    - name: Make YottaDB installation script executable
+      file:
+        path: /tmp/tmp/ydbinstall.sh
+        mode: '0755'
+        state: file
+
+    - name: Install YottaDB
+      shell: |
+        cd /tmp/tmp
+        sudo ./ydbinstall.sh --utf8 default --verbose
+      args:
+        executable: /bin/bash
+
+    - name: Set up YottaDB environment variables
+      shell: |
+        source $(pkg-config --variable=prefix yottadb)/ydb_env_set
+      args:
+        executable: /bin/bash
+      environment:
+        YDB_DIR: "/usr/local/lib/yottadb"  # Change the path to match your installation if necessary
+
+    - name: Verify YottaDB installation
+      command: ydb
+      register: yotta_version
+
+    - name: Print YottaDB version
+      debug:
+        msg: "YottaDB version: {{ yotta_version.stdout }}"

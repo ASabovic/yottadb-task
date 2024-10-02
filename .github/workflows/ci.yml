@@ -38,22 +38,22 @@ jobs:
         run: |
           ansible-playbook -i ansible/inventory.ini ansible/install_docker.yml
       
-      - name: copy file via ssh password
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DIGITALOCEAN_VM_IP }}
-          username: ${{ secrets.DIGITALOCEAN_VM_USERNAME }}
-          key: ${{ secrets.DIGITALOCEAN_SSH_PRIVATE_KEY_2 }}
-          source: "./docker-compose.yml"
-          target: "~/"
+      # - name: copy file via ssh password
+      #   uses: appleboy/scp-action@v0.1.7
+      #   with:
+      #     host: ${{ secrets.DIGITALOCEAN_VM_IP }}
+      #     username: ${{ secrets.DIGITALOCEAN_VM_USERNAME }}
+      #     key: ${{ secrets.DIGITALOCEAN_SSH_PRIVATE_KEY_2 }}
+      #     source: "./docker-compose.yml"
+      #     target: "~/"
 
-      - name: Deploy using Docker Compose
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.DIGITALOCEAN_VM_IP }}
-          username: ${{ secrets.DIGITALOCEAN_VM_USERNAME }}
-          key: ${{ secrets.DIGITALOCEAN_SSH_PRIVATE_KEY_2 }}
-          script: |
-            docker-compose up -d
+      # - name: Deploy using Docker Compose
+      #   uses: appleboy/ssh-action@v0.1.7
+      #   with:
+      #     host: ${{ secrets.DIGITALOCEAN_VM_IP }}
+      #     username: ${{ secrets.DIGITALOCEAN_VM_USERNAME }}
+      #     key: ${{ secrets.DIGITALOCEAN_SSH_PRIVATE_KEY_2 }}
+      #     script: |
+      #       docker-compose up -d
 
 
