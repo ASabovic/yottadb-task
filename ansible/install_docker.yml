@@ -1,11 +1,24 @@
 ---
-- name: Install Docker, Docker Compose, YottaDB, and GCC on Ubuntu 24.04
+- name: Install Docker and YottaDB on Ubuntu 24.04
   hosts: ubuntu
   become: yes
   tasks:
     - name: Update apt package index
       apt:
         update_cache: yes
+
+    - name: Install required packages for YottaDB
+      apt:
+        name:
+          - file
+          - binutils
+          - libelf-dev
+          - libicu-dev
+          - nano
+          - wget
+          - ca-certificates
+        state: present
+        install_recommends: no  # This corresponds to the --no-install-recommends flag
 
     - name: Install dependencies for Docker
       apt:
@@ -69,50 +82,24 @@
       debug:
         msg: "Docker Compose version: {{ compose_version.stdout }}"
 
-    # Install YottaDB and GCC
-
-    - name: Install dependencies for YottaDB and GCC
-      apt:
-        name:
-          - file
-          - binutils
-          - libelf-dev
-          - libicu-dev
-          - nano
-          - wget
-          - ca-certificates
-          - gcc
-        state: present
-
-    - name: Create temporary directory for YottaDB installation
-      file:
-        path: /tmp/tmp
-        state: directory
-        mode: '0755'
-
-    - name: Download YottaDB installation script
-      get_url:
-        url: https://download.yottadb.com/ydbinstall.sh
-        dest: /tmp/tmp/ydbinstall.sh
-        mode: '0755'
-
-    - name: Make YottaDB installation script executable
-      file:
-        path: /tmp/tmp/ydbinstall.sh
-        mode: '0755'
-        state: file
-
     - name: Install YottaDB
       shell: |
+        mkdir /tmp/tmp
+        wget -P /tmp/tmp https://download.yottadb.com/ydbinstall.sh
         cd /tmp/tmp
+        chmod +x ydbinstall.sh
         sudo ./ydbinstall.sh --utf8 default --verbose
-      args:
-        executable: /bin/bash
+      register: ydb_install_output
+      ignore_errors: yes
 
-    - name: Set up YottaDB environment variables
+    - name: Set environment variables for YottaDB
       shell: |
-        source $(pkg-config --variable=prefix yottadb)/ydb_env_set
+        echo "source \$(pkg-config --variable=prefix yottadb)/ydb_env_set" >> $HOME/.bashrc
+        echo "Accessing YottaDB from different languages will use \$HOME/.yottadb instead of /data." >> $HOME/.bashrc
       args:
         executable: /bin/bash
-      environment:
-        YDB_DIR: "/usr/local/lib/yottadb"  # Change the path to match your installation if necessary
+      when: ydb_install_output.rc == 0  # Only run if YottaDB installation was successful
+
+    - name: Inform user about YottaDB environment setup
+      debug:
+        msg: "YottaDB installed successfully. Please restart your shell or source $HOME/.bashrc to access YottaDB."
