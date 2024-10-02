@@ -116,11 +116,3 @@
         executable: /bin/bash
       environment:
         YDB_DIR: "/usr/local/lib/yottadb"  # Change the path to match your installation if necessary
-
-    - name: Verify YottaDB installation
-      command: ydb
-      register: yotta_version
-
-    - name: Print YottaDB version
-      debug:
-        msg: "YottaDB version: {{ yotta_version.stdout }}"
