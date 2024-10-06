@@ -24,15 +24,15 @@ jobs:
       #     python -m pip install --upgrade pip
       #     pip install ansible
       
-      # - name: Set up SSH
-      #   uses: webfactory/ssh-agent@v0.5.3
-      #   with:
-      #     ssh-private-key: ${{ secrets.DIGITALOCEAN_SSH_PRIVATE_KEY_2 }}
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DIGITALOCEAN_SSH_PRIVATE_KEY_2 }}
     
-      # # Optional: Test SSH connection to the server
-      # - name: Test SSH Connection
-      #   run: 
-      #     ssh -o StrictHostKeyChecking=no ${{ secrets.DIGITALOCEAN_VM_USERNAME }}@${{ secrets.DIGITALOCEAN_VM_IP }} "echo Connection Successful"
+      # Optional: Test SSH connection to the server
+      - name: Test SSH Connection
+        run: 
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DIGITALOCEAN_VM_USERNAME }}@${{ secrets.DIGITALOCEAN_VM_IP }} "echo Connection Successful"
     
       # - name: Run Ansible Playbook
       #   run: |
