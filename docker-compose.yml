@@ -9,19 +9,6 @@ services:
     environment:
       - YDB_DIR=/data
     entrypoint: ["sh", "-c", "tail -f /dev/null"]
-    #entrypoint: ["sh", "-c", "tail", "-f", "/dev/null"]
-
-  # yottadb_init:
-  #   depends_on:
-  #     - yottadb
-  #   image: download.yottadb.com/yottadb/yottadb-debian:latest-master
-  #   container_name: yottadb_init
-  #   volumes:
-  #     - ./ydb-data:/data  # Same volume to ensure shared data
-  #   entrypoint: ["/bin/bash", "-c"]
-  #   command: |
-  #     ydb <<< 'SET ^myglobal("test")="Hello again, YottaDB!"' &&
-  #     echo 'Value set in YottaDB: ^myglobal(test) = Hello again, YottaDB!'
 
 volumes:
   ydb-data:
